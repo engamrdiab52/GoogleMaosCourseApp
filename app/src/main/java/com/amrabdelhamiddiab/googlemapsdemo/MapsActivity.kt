@@ -13,12 +13,20 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.amrabdelhamiddiab.googlemapsdemo.databinding.ActivityMapsBinding
+import com.amrabdelhamiddiab.googlemapsdemo.misc.CameraAndViewPort
+import com.amrabdelhamiddiab.googlemapsdemo.misc.TypeAndStyle
 import com.google.android.gms.maps.model.MapStyleOptions
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var map: GoogleMap
     private lateinit var binding: ActivityMapsBinding
+    private val typeAndStyle by lazy {
+        TypeAndStyle()
+    }
+    private val cameraAndViewPort by lazy{
+        CameraAndViewPort()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,23 +46,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.normal_map -> {
-                map.mapType = GoogleMap.MAP_TYPE_NORMAL
-            }
-            R.id.hybrid_map -> {
-                map.mapType = GoogleMap.MAP_TYPE_HYBRID
-            }
-            R.id.satellite_map -> {
-                map.mapType = GoogleMap.MAP_TYPE_SATELLITE
-            }
-            R.id.terrain_map -> {
-                map.mapType = GoogleMap.MAP_TYPE_TERRAIN
-            }
-            R.id.none_map -> {
-                map.mapType = GoogleMap.MAP_TYPE_NONE
-            }
-        }
+        typeAndStyle.setMapType(item, map)
         return true
     }
 
@@ -64,27 +56,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // Add a marker in Sydney and move the camera
         val alexandria = LatLng(31.205297328351207, 29.918485040419384)
         map.addMarker(MarkerOptions().position(alexandria).title("Marker in Alexandria"))
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(alexandria, 10f))
+      //  map.moveCamera(CameraUpdateFactory.newLatLngZoom(alexandria, 10f))
+        map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraAndViewPort.alexandria))
         map.uiSettings.apply {
             isZoomControlsEnabled = true
         }
-        setMapStyle(map)
+        typeAndStyle.setMapStyle(map, this)
     }
 
-    private fun setMapStyle(googleMap: GoogleMap) {
-        try {
-            //true : means the style has successfully enabled
-            val success = googleMap.setMapStyle(
-                MapStyleOptions.loadRawResourceStyle(
-                    this,
-                    R.raw.style
-                )
-            )
-            if (! success){
-                Log.d("MainActivity", " failed to add style")
-            }
-        } catch (e: Exception) {
-            Log.d("MainActivity", e.message.toString())
-        }
-    }
+
 }
