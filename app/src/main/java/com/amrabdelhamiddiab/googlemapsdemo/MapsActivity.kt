@@ -62,6 +62,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             isZoomControlsEnabled = true
         }
         typeAndStyle.setMapStyle(map, this)
+      //  map.setMinZoomPreference(15f)
+     //   map.setMaxZoomPreference(17f)
     }
 
 
