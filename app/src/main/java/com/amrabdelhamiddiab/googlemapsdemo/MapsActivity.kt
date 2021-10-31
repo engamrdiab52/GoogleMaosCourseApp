@@ -1,28 +1,32 @@
 package com.amrabdelhamiddiab.googlemapsdemo
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.lifecycle.lifecycleScope
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import com.amrabdelhamiddiab.googlemapsdemo.databinding.ActivityMapsBinding
 import com.amrabdelhamiddiab.googlemapsdemo.misc.CameraAndViewPort
 import com.amrabdelhamiddiab.googlemapsdemo.misc.TypeAndStyle
-import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback/*, GoogleMap.OnMarkerDragListener*//*, GoogleMap.OnMarkerClickListener */ {
+class MapsActivity : AppCompatActivity(),
+    OnMapReadyCallback/*, GoogleMap.OnMarkerDragListener*/, GoogleMap.OnMarkerClickListener {
     companion object {
         const val TAG = "MapsActivity"
     }
@@ -63,16 +67,40 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback/*, GoogleMap.OnMark
 
         // Add a marker in Sydney and move the camera
         val alexandria = LatLng(31.205297328351207, 29.918485040419384)
+        //  val alexandria2 = LatLng(31.305297328351207, 29.818485040419384)
         val cairo = LatLng(30.047448757531424, 31.234773164975618)
+        /* val alexMarker =
+             map.addMarker(
+                 MarkerOptions()
+                     .position(alexandria)
+                     .title("Marker in Alexandria")
+                     .icon(BitmapDescriptorFactory.defaultMarker(134f*//*BitmapDescriptorFactory.HUE_ORANGE*//*))
+            )*/
         val alexMarker =
             map.addMarker(
                 MarkerOptions()
                     .position(alexandria)
                     .title("Marker in Alexandria")
-                    .draggable(true)
+                    .snippet("some random text")
+                /* .flat(true)*/
+                /* .rotation(90f)*/
+                /*.alpha(0.5f)*/
+                /* .icon(
+                     fromVectorToBitmap(
+                         R.drawable.ic_baseline_directions_car_24,
+                         Color.parseColor("#000000")
+                     )
+                 )*/
+
             )
+        /* val alexMarker2 =
+             map.addMarker(
+                 MarkerOptions()
+                     .position(alexandria2)
+                     .title("Marker in Alexandria"))*/
         alexMarker?.tag = "Restaurant"
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(alexandria, 10f))
+
         //  map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraAndViewPort.alexandria))
         map.uiSettings.apply {
             isZoomControlsEnabled = true
@@ -80,7 +108,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback/*, GoogleMap.OnMark
         typeAndStyle.setMapStyle(map, this)
         //  map.setMinZoomPreference(15f)
         //   map.setMaxZoomPreference(17f)
-
         /* lifecycleScope.launch{
              delay(2000)
              map.moveCamera(CameraUpdateFactory.zoomBy(3f))
@@ -168,8 +195,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback/*, GoogleMap.OnMark
             delay(2000)
             alexMarker?.remove()
         }*/
-        //   map.setOnMarkerClickListener(this)
-     //   map.setOnMarkerDragListener(this)
+        map.setOnMarkerClickListener(this)
+        //   map.setOnMarkerDragListener(this)
+
+    }
+
+    override fun onMarkerClick(p0: Marker): Boolean {
+        map.animateCamera(CameraUpdateFactory.zoomTo(17f), 2000, null)
+        p0.showInfoWindow()
+        return true
     }
 
 /*    override fun onMarkerDrag(p0: Marker) {
@@ -202,4 +236,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback/*, GoogleMap.OnMark
          }
      }
  */
+    /* private fun fromVectorToBitmap(id: Int, color: Int): BitmapDescriptor {
+         val vectorDrawable: Drawable? = ResourcesCompat.getDrawable(resources, id, null)
+         return if (vectorDrawable == null) {
+             Log.d(TAG, "Resources Not found")
+             BitmapDescriptorFactory.defaultMarker()
+         } else {
+             val bitmap = Bitmap.createBitmap(
+                 vectorDrawable.intrinsicWidth,
+                 vectorDrawable.intrinsicHeight,
+                 Bitmap.Config.ARGB_8888
+             )
+             val canvas = Canvas(bitmap)
+             vectorDrawable.setBounds(0, 0, canvas.width, canvas.height)
+             DrawableCompat.setTint(vectorDrawable, color)
+             vectorDrawable.draw(canvas)
+             BitmapDescriptorFactory.fromBitmap(bitmap)
+         }
+     }*/
 }
